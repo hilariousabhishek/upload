@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Transfer Program</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            color: white;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+        }
+
+        .custom-file-label::after {
+            content: "Browse";
+        }
+
+        .btn-primary {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body class="bg-dark">
+    <div class="container">
+        <h1 class="text-center mb-4">Data Transfer Program</h1>
+
+        <!-- Form 1 -->
+        <form id="dataForm1" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="dataInput1">Enter data (press Enter after each line):</label>
+                <textarea id="dataInput1" class="form-control" rows="5" placeholder="Enter data for Form 1" oninput="processData(event, 1)"></textarea>
+            </div>
+
+            <!-- Fields for Form 1 -->
+            <input type="text" class="form-control mb-2" id="field1_1" name="question" placeholder="Q">
+            <input type="text" class="form-control mb-2" name="a" id="field2_1" placeholder="A">
+            <input type="text" class="form-control mb-2" name="b" id="field3_1" placeholder="B">
+            <input type="text" class="form-control mb-2" name="c" id="field4_1" placeholder="C">
+            <input type="text" class="form-control mb-2" name="d" id="field5_1" placeholder="D">
+            <input type="text" class="form-control mb-2" name="ans" id="field6_1" placeholder="Ans">
+
+            <button type="button" class="btn btn-primary mt-3" onclick="submitForm(1)">Submit Form 1</button>
+        </form>
+
+        <!-- Form 2 -->
+        <form id="dataForm2" method="post" enctype="multipart/form-data" class="mt-5">
+            <div class="form-group">
+                <label for="dataInput2">Enter data (press Enter after each line):</label>
+                <textarea id="dataInput2" class="form-control" rows="5" placeholder="Enter data for Form 2" oninput="processData(event, 2)"></textarea>
+            </div>
+
+            <!-- Fields for Form 2 -->
+            <input type="text" class="form-control mb-2" id="field1_2" name="question" placeholder="Q">
+            <input type="text" class="form-control mb-2" name="q_value" id="field2_2" placeholder="QV">
+            <input type="text" class="form-control mb-2" name="a" id="field3_2" placeholder="A">
+            <input type="text" class="form-control mb-2" name="b" id="field4_2" placeholder="B">
+            <input type="text" class="form-control mb-2" name="c" id="field5_2" placeholder="C">
+            <input type="text" class="form-control mb-2" name="d" id="field6_2" placeholder="D">
+            <input type="text" class="form-control mb-2" name="ans" id="field7_2" placeholder="Ans">
+
+            <div class="custom-file mb-2">
+                <input type="file" class="custom-file-input" id="field8_2" accept="image/*" name="q_img" onchange="updateFileName(this)">
+                <label class="custom-file-label" for="field8_2">Choose Q Img</label>
+            </div>
+            <div class="custom-file mb-2">
+                <input type="file" class="custom-file-input" id="field9_2" accept="image/*" name="a_img" onchange="updateFileName(this)">
+                <label class="custom-file-label" for="field9_2">Choose A Img</label>
+            </div>
+            <div class="custom-file mb-2">
+                <input type="file" class="custom-file-input" id="field10_2" accept="image/*" name="b_img" onchange="updateFileName(this)">
+                <label class="custom-file-label" for="field10_2">Choose B Img</label>
+            </div>
+            <div class="custom-file mb-2">
+                <input type="file" class="custom-file-input" id="field11_2" accept="image/*" name="c_img" onchange="updateFileName(this)">
+                <label class="custom-file-label" for="field11_2">Choose C Img</label>
+            </div>
+            <div class="custom-file mb-2">
+                <input type="file" class="custom-file-input" id="field12_2" accept="image/*" name="d_img" onchange="updateFileName(this)">
+                <label class="custom-file-label" for="field12_2">Choose D Img</label>
+            </div>
+
+            <button type="button" class="btn btn-primary mt-3" onclick="submitForm(2)">Submit Form 2</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      function processData(event, formNumber) {
+          const dataInput = event.target;
+          const paragraphs = dataInput.value.split(/\n(?=\S)/); // Splitting on single line breaks followed by non-empty lines
+  
+          // Update each field with the corresponding paragraph
+          for (let i = 0; i < paragraphs.length; i++) {
+              const fieldId = `field${i + 1}_${formNumber}`;
+              const field = document.getElementById(fieldId);
+  
+              if (field) {
+                  // Convert the value to uppercase for "Ans" fields
+                  if (field.name === "ans") {
+                      field.value = paragraphs[i].trim().toUpperCase();
+                  } else {
+                      field.value = paragraphs[i].trim();
+                  }
+              }
+          }
+      }
+  
+      function submitForm(formNumber) {
+          const form = document.getElementById(`dataForm${formNumber}`);
+          const formData = new FormData(form);
+          let isValid = true;
+  
+          // Check file size for each file input
+          form.querySelectorAll('input[type="file"]').forEach(fileInput => {
+              const files = fileInput.files;
+              if (files.length > 0) {
+                  const fileSize = files[0].size; // considering only the first file
+                  const maxSizeKB = 25; // maximum size allowed in KB
+                  const maxSizeBytes = maxSizeKB * 1024; // convert KB to bytes
+  
+                  if (fileSize > maxSizeBytes) {
+                      isValid = false;
+                      alert(`File ${fileInput.name} exceeds the maximum allowed size of ${maxSizeKB} KB.`);
+                  }
+              }
+          });
+  
+          if (isValid) {
+              fetch("/", {
+                  method: "POST",
+                  body: formData,
+              })
+                  .then((response) => response.json())
+                  .then((data) => {
+                      console.log("Success:", data);
+                      // Handle success if needed
+  
+                      // Refresh the page after successful submission
+                  })
+                  .catch((error) => {
+                      console.error("Error:", error);
+                      // Handle error if needed
+                      window.location.reload();
+                  });
+          }
+      }
+  
+      function updateFileName(input) {
+          const label = input.nextElementSibling;
+          const fileName = input.files[0].name;
+          label.innerText = fileName;
+      }
+  </script>
+  
+  
+</body>
+</html>
